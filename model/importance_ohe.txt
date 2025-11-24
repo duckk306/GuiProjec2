@@ -1,0 +1,30 @@
+E_Xuất_xứ_Nhật Bản
+E_cc_numeric_137
+E_cc_numeric_75
+E_Thương_hiệu_Bmw
+E_Xuất_xứ_Mỹ
+Khoảng_giá_min
+E_Dung_tích_xe_50 - 100 Cc
+E_Xuất_xứ_Việt Nam
+E_Loại_xe_Tay Ga
+Khoảng_giá_max
+E_Thương_hiệu_Piaggio
+E_Phân_khúc_giá_Phổ Thông
+E_Loại_xe_Xe Số
+E_Thương_hiệu_Hãng Khác
+E_Dòng_xe_Dòng Khác
+E_Phân_khúc_giá_Cận Cao Cấp
+E_price_segment_code_2
+E_Thương_hiệu_Kawasaki
+E_Thương_hiệu_Harley Davidson
+E_cc_numeric_200
+Năm_đăng_ký
+E_Dung_tích_xe_Dưới 50 Cc
+E_Xuất_xứ_Trung Quốc
+E_Dòng_xe_Wave
+age
+E_Dung_tích_xe_Trên 175 Cc
+E_Dòng_xe_Sh
+E_price_segment_code_3
+E_Dòng_xe_Dream
+E_Dòng_xe_Cub
