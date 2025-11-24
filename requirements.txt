@@ -8,4 +8,4 @@ gensim
 pyvi
 joblib
 openpyxl
-
+streamlit_option_menu
