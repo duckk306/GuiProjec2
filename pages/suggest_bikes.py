@@ -206,28 +206,54 @@ if uploaded_file is not None:
         if cosine_sim_matrix is None or tfidf is None:
             st.error("Model hoặc Vectorizer chưa được load (model_randomforest.pkl & tfidf_vectorizer.pkl).")
         else:
-            try:
-                sample_id = st.text_input("Nhập 1 ID xe được gợi ý ở trên")
-                num_recommend = st.text_input("Số xe gợi ý được hiển thị", key="num_input_a")
-                st.markdown("### Thông tin xe gốc:")
+            sample_id = st.text_input("Nhập 1 ID xe được gợi ý ở trên")
+            num_recommend = st.text_input("Số xe gợi ý được hiển thị", key="num_input_a")
 
-                st.text("Tiêu đề:" + data.loc[int(sample_id), "Tiêu đề"])
-                st.text("Nội dung: " + data.loc[int(sample_id), "Mô tả chi tiết"])
-                
-                st.markdown("### Gợi ý các xe tương tự:")
-                recommendation = recommend_by_id(data_cleaned, int(sample_id), top_n=int(num_recommend))
-                recommendation_indicies = recommendation.index
-                data_recomm = data[data.index.isin(recommendation_indicies)]
-                
-                overlapping_cols = recommendation.columns.intersection(data_recomm.columns)
-                data_recomm_unique = data_recomm.drop(columns=overlapping_cols)
-                merged_df = recommendation.join(data_recomm_unique, how='left')
+            valid = True
+            # --- Validate Sample ID ---
+            if not sample_id.strip():
+                st.info("Vui lòng nhập ID xe muốn gợi ý (ví dụ: 10).")
+                valid = False
+            else:
+                try:
+                    sample_id_int = int(sample_id)
+                except ValueError:
+                    st.error("ID phải là số nguyên (vd: 10).")
+                    valid = False
 
-                st.dataframe(merged_df)
-                        
-                
-            except Exception as e:
-                st.error(f"Lỗi khi dự đoán: {e}")
+            # --- Validate Number of Recommendations ---
+            if valid:
+                if not num_recommend.strip():
+                    st.info("Vui lòng nhập số xe muốn hiển thị (ví dụ 5).")
+                    valid = False
+                else:
+                    try:
+                        num_recommend_int = int(num_recommend)
+                        if num_recommend_int <= 0:
+                            st.warning("Số lượng phải lớn hơn 0.")
+                            valid = False
+                    except ValueError:
+                        st.error("Nhập số nguyên hợp lệ (vd: 5).")
+                        valid = False
+            if valid:
+                try:
+                    st.markdown("### Thông tin xe gốc:")
+                    st.text("Tiêu đề:" + data.loc[int(sample_id), "Tiêu đề"])
+                    st.text("Nội dung: " + data.loc[int(sample_id), "Mô tả chi tiết"])
+
+                    st.markdown("### Gợi ý các xe tương tự:")
+                    recommendation = recommend_by_id(data_cleaned, int(sample_id), top_n=int(num_recommend))
+                    recommendation_indicies = recommendation.index
+                    data_recomm = data[data.index.isin(recommendation_indicies)]
+
+                    overlapping_cols = recommendation.columns.intersection(data_recomm.columns)
+                    data_recomm_unique = data_recomm.drop(columns=overlapping_cols)
+                    merged_df = recommendation.join(data_recomm_unique, how='left')
+
+                    st.dataframe(merged_df)
+
+                except Exception as e:
+                    st.error(f"Lỗi khi dự đoán: {e}")
     except Exception as e:
         st.error(f"Lỗi khi đọc/tiền xử lý file: {e}")
 
@@ -238,13 +264,30 @@ description = st.text_input("Nhập mô tả xe quan tâm")
 st.markdown("*VD: xe còn mới, máy êm, hao xăng ít, đời từ 2019 trở lên. Nếu có Vision hoặc Janus chạy dưới 10.000km thì càng tốt.*")
 num_recommend2 = st.text_input("Số xe gợi ý được hiển thị", key="num_input_b")
 
-data = pd.read_excel("data_motobikes.xlsx")
-recommendation2 = recommend_by_text(data_cleaned, description, top_n=int(num_recommend2))
-recommendation_indicies2 = recommendation2.index
-data_recomm2 = data[data.index.isin(recommendation_indicies2)] 
-overlapping_cols = recommendation2.columns.intersection(data_recomm2.columns)
-data_recomm_unique = data_recomm2.drop(columns=overlapping_cols)
-merged_df2 = recommendation2.join(data_recomm_unique, how='left')
 
-st.dataframe(merged_df2)
+if not num_recommend2.strip():
+    st.info("Vui lòng nhập số lượng xe muốn gợi ý (ví dụ: 5).")
+elif not description.strip():
+    st.info("Vui lòng nhập mô tả xe trước khi gợi ý.")
+else:
+    try:
+        top_n2 = int(num_recommend2)
+        if top_n2 <= 0:
+            st.warning("Số lượng phải lớn hơn 0.")
+        else:
+            data = pd.read_excel("data_motobikes.xlsx")
 
+            recommendation2 = recommend_by_text(data_cleaned, description, top_n=top_n2)
+            recommendation_indices2 = recommendation2.index
+
+            data_recomm2 = data[data.index.isin(recommendation_indices2)]
+
+            overlapping_cols = recommendation2.columns.intersection(data_recomm2.columns)
+            data_recomm_unique = data_recomm2.drop(columns=overlapping_cols)
+
+            merged_df2 = recommendation2.join(data_recomm_unique, how='left')
+
+            st.dataframe(merged_df2)
+
+    except ValueError:
+        st.error("Vui lòng nhập số nguyên hợp lệ (ví dụ: 5).")
